@@ -67,8 +67,8 @@ def save_files(path, fileName, jd_zg, jd_zr, jd_zi, mag_zg, mag_zr, mag_zi, mag_
     data_zi_df = pd.DataFrame(data_zi)
 
     data_zg_df.to_csv(path+"zg/"+fileName+"_zg"+".txt", sep='\t', index=False)
-    data_zr_df.to_csv(path+"zr/"+fileName+"_zr"+".csv", sep='\t', index=False)
-    data_zi_df.to_csv(path+"zi/"+fileName+"_zi"+".csv", sep='\t', index=False)
+    data_zr_df.to_csv(path+"zr/"+fileName+"_zr"+".txt", sep='\t', index=False)
+    data_zi_df.to_csv(path+"zi/"+fileName+"_zi"+".txt", sep='\t', index=False)
 
 #Stage 4: Running a loop over all the files in the data folder
 def generate_split_lc_csvs(path_input, path):
