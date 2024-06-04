@@ -1,0 +1,932 @@
+
+<HTML>
+<head>
+<style type="text/css">
+body { color: #000;
+ background: #fff;
+ font-family: arial, helvetica, sans-serif;
+ font-size: 12pt;
+ line-height: 16pt;
+ margin-top: 3mm;
+ margin-bottom: 3mm;
+ margin-left: 10mm;
+ margin-right: 10mm;
+}
+ 
+p {text-align: justify; text-indent: 6mm; line-height: 16pt}
+.code {text-align: left; font-family: courier; background: #ccc; color: #000}
+table.main {border-spacing: 5pt}
+td { padding-left: 20pt; padding-right: 20pt; padding-bottom: 3pt }
+
+a:link {color: #55f; text-decoration: none}
+a:visited {color: #33f; text-decoration: none}
+a:active {color: #55f; text-decoration: none}
+a:hover {color: #55f; text-decoration: underline}
+</style>
+
+<SCRIPT LANGUAGE="JavaScript">
+function fn_doubleperiod (form) {
+    var TestVar = form.pmanual.value;
+    form.pmanual.value = TestVar*2.0;
+    form.submit()
+}
+
+function fn_halfperiod (form) {
+    var TestVar = form.pmanual.value;
+    form.pmanual.value = TestVar/2.0;
+    form.submit()
+}
+
+function fn_setperiod (form,period) {
+    form.pmanual.value = period;
+}
+
+function fn_improveperiod (form,period) {
+    var Factor = 10.0;
+    var Freq = 1.0/period;
+    var FreqRange = 1.0/form.pmin.value - 1.0/form.pmax.value;
+    var FreqOffset = Math.min( 0.05*Freq, FreqRange/Factor);
+    var MinFreq = Freq - FreqOffset;
+    var MaxFreq = Freq + FreqOffset;
+    var pmax = 1.0/MinFreq;
+    var pmin = 1.0/MaxFreq;
+    form.pmin.value = pmin;
+    form.pmax.value = pmax;
+    form.phaseshift.value = form.phaseshift.value/Factor;
+    form.submit();
+}
+
+function fn_estimate_period_accuracy (form,period) {
+    var JDRange = form.jdmax.value - form.jdmin.value;
+    var DeltaP = 0.5*period*period/JDRange;
+    alert("The selected period is " + period.toFixed(8) + " d, its estimated accuracy is " + DeltaP.toFixed(8) + " d.\nThis error estimation is done as P_error = 0.5 * P^2/JD_range which corresponds \nto the phase shift of 0.5 over the time range of observations (" + JDRange.toFixed(2) + " days)." )
+}
+
+</SCRIPT>
+
+
+</head>
+<CENTER>
+<h2>Period search results</h2>
+<br>
+<form name="mainform" enctype="multipart/form-data" action="http://scan.sai.msu.ru/cgi-bin/lk/process_lightcurve.py" method="post">
+Max period:&nbsp;<input type="text" name="pmax" value="100.0" size=3>d,&nbsp;&nbsp;
+Min period:&nbsp;<input type="text" name="pmin" value="0.1" size=3>d,&nbsp;&nbsp;
+Max phase shift:&nbsp;<input type="text" name="phaseshift" value="0.1" size=3>&nbsp;&nbsp;  
+<input type="submit" value="Compute">
+<input type="hidden" name="fileupload" value="False">
+<input type="hidden" name="jobid" value="lk24001RqcMLwqS__out04186_dat">
+<input type="hidden" name="lcfile" value="lightcurve.dat">
+<br>
+<br>
+<TABLE>
+<tr><td>Light elements: </td><td align="left">JD0= <input type="text" name="jdmanual" value="2445918.53400" size=11>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Period= <input type="text" name="pmanual" value="0.5496179" size=8>d
+<INPUT TYPE="button" NAME="doubleperiod" Value="Px2" onClick="fn_doubleperiod(this.form)">
+<INPUT TYPE="button" NAME="doubleperiod" Value="P/2" onClick="fn_halfperiod(this.form)">
+</td>
+</tr>
+
+<input type="hidden" name="previouspmanual" value="0.5496179">
+<input type="hidden" name="previoujdmanual" value="2445918.53400">
+<tr><td>Time range: </td><td align="left">&nbsp;&nbsp;&nbsp;&nbsp;JD 
+<input type="text" name="jdmin" value="2445642.36800" size=11>
+&nbsp;-&nbsp;
+<input type="text" name="jdmax" value="2450371.33000" size=11>
+</td>
+</tr>
+</TABLE>
+<font style="font-size:x-small;color:#A0A0A0;">
+Note, you'll need to <a style="font-size:x-small;color:#A0A0A0;" href="http://scan.sai.msu.ru/lk">re-upload the lightcurve file</a> to get back to the full JD range after exploring a limited one.
+</font>
+
+<br><br>Phase range for plots: <input type="radio" name="phaserange" value="1" checked>&nbsp;-0.5 to 1.0&nbsp;&nbsp;&nbsp;<input type="radio" name="phaserange" value="2">&nbsp;0.0 to 2.0&nbsp;&nbsp;&nbsp;<input type="radio" name="phaserange" value="3">&nbsp;0.0 to 1.0
+
+</form>
+
+<pre>Input lightcurve data file: <span style="color: green;">out04186.dat</span> 
+Edited lightcurve data file: <a href="edited_lightcurve_data.txt">edited_lightcurve_data.txt</a>
+The lightcurve contains 111 points, the magnitude range is 15.81 - 16.66, peak-to-peak amplitude 0.85 mag.
+
+<!--#include virtual="removed_points.html" -->
+</pre>
+Please find below the lightcurve (magnitude plotted as a function of time)
+as well as phased lightcurves corresponding to the ten highest peaks identified
+on <b>Lafler & Kinman and Deeming (DFT)</b> periodograms in the specified trial period range (0.1 to 100.0 days).
+You may remove an outlier lightcurve point by clicking on it in any of the lightcurve plots.
+Press "Compute" again to re-compute periodograms without the deleted points.
+You may <a href="lk24001RqcMLwqS__out04186_dat.tar.gz">download the .tar.gz archive containing this results page</a> and the data files it links to.
+The interactive features will not work for the static downloaded copy.
+<hr>
+<h2>Lafler & Kinman method</h2>
+<TABLE width="750">
+<tr><th>Lightcurve</th><th>Lafler & Kinman periodogram</th></tr>
+<tr>
+<td><center>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/lightcurve.png>
+<img src="lightcurve.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="lightcurve.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="lightcurve.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="lightcurve.gnuplot">script</a>
+</center></td>
+<td><center>
+<img src="lk.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="lk.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="lk.gnuplot">script</a> 
+</center></td>
+</tr>
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.5496179 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_1.png>
+<img src="phase_lc_1.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_1.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_1.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_1.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>L&K peak 1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1/&theta; =  1.63&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 1.819446 c/d</br>
+<img src="phase_lc_1.lk.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="lk.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_1.lk.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.5496179)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.5496179);fn_estimate_period_accuracy(document.mainform,0.5496179)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.5496179);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.5496179);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.2748120 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_2.png>
+<img src="phase_lc_2.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_2.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_2.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_2.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>L&K peak 2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1/&theta; =  1.39&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 3.638851 c/d</br>
+<img src="phase_lc_2.lk.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="lk.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_2.lk.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.2748120)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2748120);fn_estimate_period_accuracy(document.mainform,0.2748120)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2748120);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2748120);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 1.0992502 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_3.png>
+<img src="phase_lc_3.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_3.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_3.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_3.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>L&K peak 3:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1/&theta; =  1.38&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 0.909711 c/d</br>
+<img src="phase_lc_3.lk.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="lk.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_3.lk.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,1.0992502)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,1.0992502);fn_estimate_period_accuracy(document.mainform,1.0992502)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,1.0992502);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,1.0992502);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 1.9236799 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_4.png>
+<img src="phase_lc_4.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_4.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_4.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_4.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>L&K peak 4:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1/&theta; =  1.28&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 0.519837 c/d</br>
+<img src="phase_lc_4.lk.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="lk.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_4.lk.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,1.9236799)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,1.9236799);fn_estimate_period_accuracy(document.mainform,1.9236799)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,1.9236799);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,1.9236799);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 2.1985077 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_5.png>
+<img src="phase_lc_5.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_5.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_5.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_5.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>L&K peak 5:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1/&theta; =  1.24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 0.454854 c/d</br>
+<img src="phase_lc_5.lk.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="lk.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_5.lk.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,2.1985077)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,2.1985077);fn_estimate_period_accuracy(document.mainform,2.1985077)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,2.1985077);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,2.1985077);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.4308853 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_6.png>
+<img src="phase_lc_6.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_6.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_6.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_6.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>L&K peak 6:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1/&theta; =  1.24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 2.320803 c/d</br>
+<img src="phase_lc_6.lk.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="lk.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_6.lk.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.4308853)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.4308853);fn_estimate_period_accuracy(document.mainform,0.4308853)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.4308853);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.4308853);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.8244370 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_7.png>
+<img src="phase_lc_7.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_7.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_7.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_7.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>L&K peak 7:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1/&theta; =  1.22&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 1.212949 c/d</br>
+<img src="phase_lc_7.lk.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="lk.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_7.lk.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.8244370)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.8244370);fn_estimate_period_accuracy(document.mainform,0.8244370)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.8244370);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.8244370);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.7586989 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_8.png>
+<img src="phase_lc_8.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_8.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_8.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_8.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>L&K peak 8:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1/&theta; =  1.16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 1.318046 c/d</br>
+<img src="phase_lc_8.lk.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="lk.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_8.lk.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.7586989)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.7586989);fn_estimate_period_accuracy(document.mainform,0.7586989)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.7586989);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.7586989);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.2154426 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_9.png>
+<img src="phase_lc_9.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_9.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_9.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_9.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>L&K peak 9:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1/&theta; =  1.03&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 4.641608 c/d</br>
+<img src="phase_lc_9.lk.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="lk.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_9.lk.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.2154426)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2154426);fn_estimate_period_accuracy(document.mainform,0.2154426)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2154426);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2154426);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.3793461 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_10.png>
+<img src="phase_lc_10.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_10.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_10.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_10.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>L&K peak 10:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1/&theta; =  0.98&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 2.636115 c/d</br>
+<img src="phase_lc_10.lk.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="lk.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_10.lk.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.3793461)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.3793461);fn_estimate_period_accuracy(document.mainform,0.3793461)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.3793461);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.3793461);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+</TABLE>
+<hr>
+<h2>Deeming (DFT) method</h2>
+<TABLE width="750">
+<tr><th>Lightcurve</th><th>Deeming (DFT) periodogram</th></tr>
+<tr>
+<td><center>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/lightcurve.png>
+<img src="lightcurve.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="lightcurve.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="lightcurve.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="lightcurve.gnuplot">script</a>
+</center></td>
+<td><center>
+<img src="deeming.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.gnuplot">script</a> 
+</center></td>
+</tr>
+ 
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.2748120 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_11.png>
+<img src="phase_lc_11.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_11.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_11.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_11.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>DFT peak 1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Power = 74.63937633&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 3.638851 c/d</br>
+<img src="phase_lc_11.deeming.png"></img>
+<!-- <a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_11.deeming.dat">data</a>&nbsp;&nbsp;&nbsp; --!>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_11.deeming.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.2748120)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2748120);fn_estimate_period_accuracy(document.mainform,0.2748120)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2748120);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2748120);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.2154426 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_12.png>
+<img src="phase_lc_12.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_12.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_12.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_12.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>DFT peak 2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Power = 68.47878618&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 4.641608 c/d</br>
+<img src="phase_lc_12.deeming.png"></img>
+<!-- <a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_12.deeming.dat">data</a>&nbsp;&nbsp;&nbsp; --!>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_12.deeming.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.2154426)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2154426);fn_estimate_period_accuracy(document.mainform,0.2154426)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2154426);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2154426);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.3789540 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_13.png>
+<img src="phase_lc_13.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_13.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_13.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_13.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>DFT peak 3:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Power = 56.22927207&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 2.638843 c/d</br>
+<img src="phase_lc_13.deeming.png"></img>
+<!-- <a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_13.deeming.dat">data</a>&nbsp;&nbsp;&nbsp; --!>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_13.deeming.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.3789540)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.3789540);fn_estimate_period_accuracy(document.mainform,0.3789540)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.3789540);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.3789540);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.1771685 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_14.png>
+<img src="phase_lc_14.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_14.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_14.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_14.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>DFT peak 4:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Power = 41.65546696&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 5.644344 c/d</br>
+<img src="phase_lc_14.deeming.png"></img>
+<!-- <a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_14.deeming.dat">data</a>&nbsp;&nbsp;&nbsp; --!>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_14.deeming.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.1771685)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.1771685);fn_estimate_period_accuracy(document.mainform,0.1771685)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.1771685);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.1771685);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.6112070 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_15.png>
+<img src="phase_lc_15.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_15.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_15.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_15.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>DFT peak 5:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Power = 36.14515941&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 1.636107 c/d</br>
+<img src="phase_lc_15.deeming.png"></img>
+<!-- <a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_15.deeming.dat">data</a>&nbsp;&nbsp;&nbsp; --!>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_15.deeming.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.6112070)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.6112070);fn_estimate_period_accuracy(document.mainform,0.6112070)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.6112070);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.6112070);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.9835637 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_16.png>
+<img src="phase_lc_16.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_16.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_16.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_16.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>DFT peak 6:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Power = 25.55879026&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 1.016711 c/d</br>
+<img src="phase_lc_16.deeming.png"></img>
+<!-- <a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_16.deeming.dat">data</a>&nbsp;&nbsp;&nbsp; --!>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_16.deeming.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.9835637)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.9835637);fn_estimate_period_accuracy(document.mainform,0.9835637)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.9835637);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.9835637);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 71.5512307 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_17.png>
+<img src="phase_lc_17.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_17.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_17.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_17.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>DFT peak 7:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Power = 25.27579767&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 0.013976 c/d</br>
+<img src="phase_lc_17.deeming.png"></img>
+<!-- <a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_17.deeming.dat">data</a>&nbsp;&nbsp;&nbsp; --!>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_17.deeming.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,71.5512307)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,71.5512307);fn_estimate_period_accuracy(document.mainform,71.5512307)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,71.5512307);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,71.5512307);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.2320007 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_18.png>
+<img src="phase_lc_18.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_18.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_18.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_18.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>DFT peak 8:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Power = 24.37286216&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 4.310331 c/d</br>
+<img src="phase_lc_18.deeming.png"></img>
+<!-- <a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_18.deeming.dat">data</a>&nbsp;&nbsp;&nbsp; --!>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_18.deeming.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.2320007)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2320007);fn_estimate_period_accuracy(document.mainform,0.2320007)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2320007);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.2320007);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 0.1314017 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_19.png>
+<img src="phase_lc_19.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_19.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_19.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_19.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>DFT peak 9:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Power = 22.82951667&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 7.610251 c/d</br>
+<img src="phase_lc_19.deeming.png"></img>
+<!-- <a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_19.deeming.dat">data</a>&nbsp;&nbsp;&nbsp; --!>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_19.deeming.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,0.1314017)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.1314017);fn_estimate_period_accuracy(document.mainform,0.1314017)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.1314017);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,0.1314017);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+
+<tr><td colspan=2>
+<CENTER>
+<hr>
+</CENTER></td></tr>
+<td>
+<CENTER>JD<sub>max</sub> = 2445918.53400 + 1.5209149 x E</br>
+<A HREF=http://scan.sai.msu.ru/cgi-bin/lk/process_click.sh/files/lk24001RqcMLwqS__out04186_dat/phase_lc_20.png>
+<img src="phase_lc_20.png" ISMAP></img>
+</A>
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_20.dat">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_20.dat.selected">removed pts.</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_20.gnuplot">script</a>
+</CENTER>
+
+</td>
+<td>
+<CENTER>DFT peak 10:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Power = 22.39236872&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nu; = 0.657499 c/d</br>
+<img src="phase_lc_20.deeming.png"></img>
+<!-- <a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_20.deeming.dat">data</a>&nbsp;&nbsp;&nbsp; --!>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="phase_lc_20.deeming.gnuplot">script</a>
+</CENTER>
+</td></tr>
+
+<tr><td colspan=2>
+<CENTER>
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_improveperiod(document.mainform,1.5209149)">improve this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,1.5209149);fn_estimate_period_accuracy(document.mainform,1.5209149)">select this period</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,1.5209149);fn_doubleperiod(document.mainform)">double this period</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;" href="javascript:void(0)" onClick="fn_setperiod(document.mainform,1.5209149);fn_halfperiod(document.mainform)">halve this period</a>
+</CENTER>
+</td></tr>
+
+
+</TABLE>
+<hr>
+<h2>Deeming (DFT) power spectral density (PSD) plotted in loglog scale</h2>
+<TABLE width="750">
+<tr><th>Window function</th><th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deeming (DFT = PSD) periodogram</th></tr>
+<tr>
+<td><center>
+<img src="window_loglog.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="window_loglog.gnuplot">script</a>
+</center></td>
+<td><center>
+<img src="psd_loglog.png"></img>
+<a style="font-size:x-small;color:#A0A0A0;" href="deeming.periodogram">data</a>&nbsp;&nbsp;&nbsp;
+<a style="font-size:x-small;color:#A0A0A0;" href="psd_loglog.gnuplot">script</a> 
+</center></td>
+</tr>
+ 
+
+</TABLE>
+</CENTER>
+</HTML>
+

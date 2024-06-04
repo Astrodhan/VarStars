@@ -1,0 +1,66 @@
+export PATH=/var/www/scan.sai.msu.ru/cgi-bin/lk:/bin:/sbin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/opt/bin:/usr/lib/llvm/16/bin:/usr/bin/cdsclient; echo 1 > files/lk20643FWpnGfro__out20182_dat/phaserange_type.input ; echo 1 > files/lk20643FWpnGfro__out20182_dat/asassnband_1.input ;  echo No UTC 00:00:00.00 +00:00:00.0 > files/lk20643FWpnGfro__out20182_dat/time_conversion.txt  ; lk_web.sh files/lk20643FWpnGfro__out20182_dat/original_lightcurve_file.txt 100.0 0.1 0.1 0 2470000 lk20643FWpnGfro__out20182_dat   2>&1 >> files/lk20643FWpnGfro__out20182_dat/program.log
+############## /var/www/scan.sai.msu.ru/cgi-bin/lk/lk_web.sh ##############
+Changing to the working directory files/lk20643FWpnGfro__out20182_dat
+Setting the phase range for plots
+The lightcurve file has just been uploaded (this is the first run)
+Checking free disk space
+Determined disk usage 35%
+Checking if the input lightcurve file is in Catalina or ASAS-SN CSV format
+Running lightcurve file sanitizer
+APPLYHELCOR = No
+TIMESYS = UTC
+RAHMS = 00:00:00.00
+DECDMS = +00:00:00.0
+Setting JD0
+2447477.22500
+Computing periodograms
+1.002417 61.940926 DFT
+1.003135 1.529087 LK
+gnuplot deeming.gnuplot
+gnuplot lightcurve.gnuplot
+gnuplot lk.gnuplot
+gnuplot phase_lc_1.gnuplot
+gnuplot phase_lc_1.lk.gnuplot
+gnuplot phase_lc_10.gnuplot
+gnuplot phase_lc_10.lk.gnuplot
+gnuplot phase_lc_11.deeming.gnuplot
+gnuplot phase_lc_11.gnuplot
+gnuplot phase_lc_12.deeming.gnuplot
+gnuplot phase_lc_12.gnuplot
+gnuplot phase_lc_13.deeming.gnuplot
+gnuplot phase_lc_13.gnuplot
+gnuplot phase_lc_14.deeming.gnuplot
+gnuplot phase_lc_14.gnuplot
+waiting
+gnuplot phase_lc_15.deeming.gnuplot
+gnuplot phase_lc_15.gnuplot
+gnuplot phase_lc_16.deeming.gnuplot
+gnuplot phase_lc_16.gnuplot
+gnuplot phase_lc_17.deeming.gnuplot
+gnuplot phase_lc_17.gnuplot
+gnuplot phase_lc_18.deeming.gnuplot
+gnuplot phase_lc_18.gnuplot
+gnuplot phase_lc_19.deeming.gnuplot
+gnuplot phase_lc_19.gnuplot
+gnuplot phase_lc_2.gnuplot
+gnuplot phase_lc_2.lk.gnuplot
+gnuplot phase_lc_20.deeming.gnuplot
+gnuplot phase_lc_20.gnuplot
+gnuplot phase_lc_3.gnuplot
+gnuplot phase_lc_3.lk.gnuplot
+waiting
+gnuplot phase_lc_4.gnuplot
+gnuplot phase_lc_4.lk.gnuplot
+gnuplot phase_lc_5.gnuplot
+gnuplot phase_lc_5.lk.gnuplot
+gnuplot phase_lc_6.gnuplot
+gnuplot phase_lc_6.lk.gnuplot
+gnuplot phase_lc_7.gnuplot
+gnuplot phase_lc_7.lk.gnuplot
+gnuplot phase_lc_8.gnuplot
+gnuplot phase_lc_8.lk.gnuplot
+gnuplot phase_lc_9.gnuplot
+gnuplot phase_lc_9.lk.gnuplot
+gnuplot psd_loglog.gnuplot
+gnuplot window_loglog.gnuplot
+index.html created
