@@ -7,7 +7,7 @@ body{
 }
 
 table{
-    background-color: #fffec4;
+    background-color: #fcf9c2;
     margin-left: auto;
     margin-right: auto;
     width: 60%;
@@ -15,7 +15,7 @@ table{
 }
 
 .intable{
-    background-color: #fffec4;
+    background-color: #fcf9c2;
     margin-left: auto;
     margin-right: auto;
     width: 90%;
@@ -31,7 +31,13 @@ table{
 }
 
 td{
-    background-color: #fffec4;
+    background-color: #fcf9c2;
+    text-align: left;
+    color:rgb(0, 0, 0); 
+}
+
+.centertd{
+    background-color: #fcf9c2;
     text-align: center;
     color:rgb(0, 0, 0); 
 }
